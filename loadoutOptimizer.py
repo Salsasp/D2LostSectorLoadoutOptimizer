@@ -2,6 +2,7 @@ import pydest
 import asyncio
 import datetime
 import copy
+import requests
 
 class LostSector:
     def __init__(self, day_of_week, date, name, reward, location, shields, champions, surge):
@@ -57,16 +58,31 @@ def initializeSeasonalLostSectors():
 
 
 
+platforms = {'XBOX': 1, 'PLAYSTATION': 2, 'PC': 3}
 
-
-def main():
+async def main():
     destiny = pydest.Pydest('f6777de733f847a5a7c8ab50d357d399') #create object to access api using api key
     #await destiny.close()
-    seasonalSectors = initializeSeasonalLostSectors()
-    for sector in seasonalSectors:
-        sector.display()
+    #seasonalSectors = initializeSeasonalLostSectors()
+    #for sector in seasonalSectors:
+    #    sector.display()
+    platform = platforms.get('PC')
+    username = "Salsasp#2330"
+    userResponse = await destiny.api.search_destiny_player(platform, username)
+
+    if userResponse['ErrorCode'] == 1 and len(userResponse['Response']) > 0:
+        print("---")
+        print("Player found!")
+        print("Display Name: {}".format(userResponse['Response'][0]['displayName']))
+        print("Membership ID: {}".format(userResponse['Response'][0]['membershipId']))
+    else:
+        print("Could not locate player.")
+
+    vaultData = await destiny.api._get_request("https://www.bungie.net/Platform/Destiny2/"+str(platform)+"/Profile/"+str(userResponse['Response'][0]['membershipId'])+"/?components=102")
+    await destiny.close()
+    
 
 main()
-#loop = asyncio.get_event_loop()
-#loop.run_until_complete(main())
-#loop.close()
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
+loop.close()
