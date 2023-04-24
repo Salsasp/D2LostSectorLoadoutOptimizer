@@ -3,7 +3,6 @@ import asyncio
 import playerVault
 import datetime
 import copy
-import requests
 
 class LostSector:
     def __init__(self, day_of_week, date, name, reward, location, shields, champions, surge):
@@ -85,7 +84,8 @@ async def main():
 
     for hash in items:
        dehashedItem = await destiny.decode_hash(hash['itemHash'], 'DestinyInventoryItemDefinition')
-       #TODO: find out how to check whether an item is a weapon, then add only weapons to 'decodedWeapons' list
+       if dehashedItem['itemType'] != 3:
+           continue
        decodedWeapons.append(dehashedItem) 
     currVault = playerVault.Vault(decodedWeapons)
 
