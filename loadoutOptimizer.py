@@ -1,5 +1,6 @@
 import pydest
 import asyncio
+import playerVault
 import datetime
 import copy
 import requests
@@ -79,6 +80,15 @@ async def main():
         print("Could not locate player.")
 
     vaultData = await destiny.api._get_request("https://www.bungie.net/Platform/Destiny2/"+str(platform)+"/Profile/"+str(userResponse['Response'][0]['membershipId'])+"/?components=102")
+    items = vaultData['Response']['profileInventory']['data']['items']
+    decodedWeapons = []
+
+    for hash in items:
+       dehashedItem = await destiny.decode_hash(hash['itemHash'], 'DestinyInventoryItemDefinition')
+       #TODO: find out how to check whether an item is a weapon, then add only weapons to 'decodedWeapons' list
+       decodedWeapons.append(dehashedItem) 
+    currVault = playerVault.Vault(decodedWeapons)
+
     await destiny.close()
     
 
