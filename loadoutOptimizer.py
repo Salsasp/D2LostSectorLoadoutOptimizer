@@ -1,7 +1,6 @@
 import pydest
 import asyncio
 import playerVault
-import datetime
 import copy
 
 class LostSector:
@@ -51,21 +50,24 @@ def initializeSeasonalLostSectors():
         shields = []
         champions = []
     return seasonalSectors
-
-
-        
             
 
-
+async def generateWeaponTags(weaponData, destiny):
+    #TODO: create a map of weapons with keys corresponding to weapon atributes (eg. energy type, weapon type, etc.)
+    dehashedWeaponCategories = []
+    categories = []
+    for weapon in weaponData:
+        for element in weapon['itemCategoryHashes']:
+            categories.append(await destiny.decode_hash(element, 'DestinyItemCategoryDefinition'))
+        dehashedWeaponCategories.append(copy.copy(categories))
+        categories = []
+    return dehashedWeaponCategories #this list contains what type of weapon, what slot, (hopefully energy type too), and I also hope to find other properties as well
 
 platforms = {'XBOX': 1, 'PLAYSTATION': 2, 'PC': 3}
 
 async def main():
     destiny = pydest.Pydest('f6777de733f847a5a7c8ab50d357d399') #create object to access api using api key
-    #await destiny.close()
-    #seasonalSectors = initializeSeasonalLostSectors()
-    #for sector in seasonalSectors:
-    #    sector.display()
+
     platform = platforms.get('PC')
     username = "Salsasp#2330"
     userResponse = await destiny.api.search_destiny_player(platform, username)
@@ -87,7 +89,9 @@ async def main():
        if dehashedItem['itemType'] != 3:
            continue
        decodedWeapons.append(dehashedItem) 
-    currVault = playerVault.Vault(decodedWeapons)
+    weaponTags = await generateWeaponTags(decodedWeapons, destiny)
+   # currVault = playerVault.Vault(decodedWeapons, destiny)
+    #itemCategory = await destiny.decode_hash(decodedWeapons[0]['itemCategoryHashes'][0], 'DestinyItemCategoryDefinition')
 
     await destiny.close()
     
