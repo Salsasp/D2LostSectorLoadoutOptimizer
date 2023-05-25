@@ -1,6 +1,7 @@
 import pydest
 import asyncio
 import playerVault
+import destinyweapon
 import copy
 
 class LostSector:
@@ -50,20 +51,21 @@ def initializeSeasonalLostSectors():
         shields = []
         champions = []
     return seasonalSectors
-            
 
-async def generateWeaponTags(weaponData, destiny):
-    #TODO: create a map of weapons with keys corresponding to weapon atributes (eg. energy type, weapon type, etc.)
-    dehashedWeaponCategories = []
-    categories = []
-    for weapon in weaponData:
-        for element in weapon['itemCategoryHashes']:
-            categories.append(await destiny.decode_hash(element, 'DestinyItemCategoryDefinition'))
-        dehashedWeaponCategories.append(copy.copy(categories))
-        categories = []
-    return dehashedWeaponCategories #this list contains what type of weapon, what slot, (hopefully energy type too), and I also hope to find other properties as well
-
+damageTypes = {1:'kinetic', 2:'arc', 3:'solar', 4:'void', 6:'stasis', 7:'strand'}
 platforms = {'XBOX': 1, 'PLAYSTATION': 2, 'PC': 3}
+seasonalChampionMods = {'Auto Rifle': 'barrier', 'Glaive': 'unstoppable', 'Hand Cannon': 'unstoppable', 'Scout Rifle': 'overload', 'Trace Rifle': 'overload'}
+            
+def generateWeaponTags(weaponData, destiny):
+    simplifiedWeapons=list()
+    for weapon in weaponData:
+        name = weapon["displayProperties"]["name"]
+        type = weapon["itemTypeDisplayName"]
+        element = damageTypes.get(weapon["defaultDamageType"])
+        rarity = weapon["inventory"]["tierTypeName"]
+        champion = seasonalChampionMods.get(type, "empty")
+        simplifiedWeapons.append(destinyweapon.DestinyWeapon(name, type, element, champion, rarity))
+    return simplifiedWeapons
 
 async def main():
     destiny = pydest.Pydest('f6777de733f847a5a7c8ab50d357d399') #create object to access api using api key
@@ -89,9 +91,7 @@ async def main():
        if dehashedItem['itemType'] != 3:
            continue
        decodedWeapons.append(dehashedItem) 
-    weaponTags = await generateWeaponTags(decodedWeapons, destiny)
-   # currVault = playerVault.Vault(decodedWeapons, destiny)
-    #itemCategory = await destiny.decode_hash(decodedWeapons[0]['itemCategoryHashes'][0], 'DestinyItemCategoryDefinition')
+    simplifiedWeapons = generateWeaponTags(decodedWeapons, destiny)
 
     await destiny.close()
     
