@@ -48,6 +48,9 @@ def initializeSeasonalLostSectors():
         champions.append(file.readline().strip())
         champions.append(file.readline().strip())
         reward = file.readline().strip()
+        shields = [x.lower() for x in shields]
+        champions = [x.lower() for x in champions]
+        surge = surge.lower()
         seasonalSectors.append(LostSector(day_of_week, date, name, reward, location, shields, champions, surge))
         shields = []
         champions = []

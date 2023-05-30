@@ -1,6 +1,7 @@
 import pydest
 import asyncio
 import LostSector
+import destinyweapon
 #TODO: add code to dehash all weapons in player vault, add them to a list, and use some sort of data structure(undetermined) to sort weapons based on their different attributes
 class Vault: 
 
@@ -8,6 +9,8 @@ class Vault:
         self.weaponData = playerVaultData
         self.simplifiedWeapons = simplifiedWeapons
         self.generateWeaponScores(simplifiedWeapons)
+        weaponsByScore = sorted(self.simplifiedWeapons, key = lambda x: destinyweapon.DestinyWeapon.getWeaponScoreByWeapon(x), reverse=True)
+        print()
 
     def sortWeaponsByAttributes(self, simplifiedWeapons):
         arc = []; solar = []; void = [] 
@@ -76,16 +79,22 @@ class Vault:
             currWepScore = 0
             #energy
             if weapon.getElement() in dailySector.getShields(): #!!! fix strings not properly comparing !!!
-                currWepScore += 3
+                currWepScore += 5
+            #bonus points if champ and surge match
+            if weapon.getChampion() in dailySector.getChamps() and weapon.getElement() == dailySector.getSurge():
+                currWepScore += 30
             #champs
-            if weapon.getChampion() in dailySector.getChamps():
+            elif weapon.getChampion() in dailySector.getChamps():
                 currWepScore += 10
             #surge
-            if weapon.getElement() == dailySector.getSurge():
-                currWepScore += 15
+            elif weapon.getElement() == dailySector.getSurge():
+                currWepScore += 10
             #exotic intrinsics
-            if weapon.getRarity() == "exotic" and exoticIntrinsics.get(weapon.getName()) in dailySector.getChamps():
-                currWepScore += 20
-
+            if weapon.getRarity() == "Exotic" and exoticIntrinsics.get(weapon.getName()) in dailySector.getChamps():
+                currWepScore += 40
+            weapon.setWeaponScore(currWepScore)
             #overcharge wep -- WIP (need overcharged weapon data for lost sectors)
-            
+
+            #TODO:develop loadout optimization (such as the requirements of only 1 special, heavy primary, only one exotic, meeting both champ requirements, etc...)
+            #TODO:weigh certain meta weapon types more favorably, maybe even specific meta weapons. 
+    

@@ -22,7 +22,11 @@ class DestinyWeapon:
         return self.champion
     def getRarity(self):
         return self.rarity
+    def getWeaponScore(self):
+        return self.weaponScore
+    def getWeaponScoreByWeapon(weapon):
+        return weapon.getWeaponScore() #probably a better way to do this but I need it for sort key
     
     def setWeaponScore(self,value): #store the reccomendation score for the weapon
-        self.weaponRecScore = value
+        self.weaponScore = value
 
