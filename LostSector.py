@@ -17,6 +17,13 @@ class LostSector:
             print(champion + ", ", end='')
         print(self.surge + '\n')
 
+    def getShields(self):
+        return self.shields
+    def getChamps(self):
+        return self.champions
+    def getSurge(self):
+        return self.surge
+
 def initializeSeasonalLostSectors():
     date, champions, shields, seasonalSectors = [], [], [], []
     day_of_week, name, reward, location, surge = "", "", "", "", ""
@@ -45,3 +52,4 @@ def initializeSeasonalLostSectors():
         shields = []
         champions = []
     return seasonalSectors
+
