@@ -23,6 +23,8 @@ class LostSector:
         return self.champions
     def getSurge(self):
         return self.surge
+    def getDate(self):
+        return self.date
 
 def initializeSeasonalLostSectors():
     date, champions, shields, seasonalSectors = [], [], [], []
@@ -55,4 +57,10 @@ def initializeSeasonalLostSectors():
         shields = []
         champions = []
     return seasonalSectors
+
+def getSectorByDate(date):
+    sectors = initializeSeasonalLostSectors()
+    for sector in sectors:
+        if sector.getDate() == date:
+            return sector
 

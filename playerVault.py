@@ -10,6 +10,7 @@ class Vault:
         self.simplifiedWeapons = simplifiedWeapons
         self.generateWeaponScores(simplifiedWeapons)
         weaponsByScore = sorted(self.simplifiedWeapons, key = lambda x: destinyweapon.DestinyWeapon.getWeaponScoreByWeapon(x), reverse=True)
+        generateLoadout(weaponsByScore)
         print()
 
     def sortWeaponsByAttributes(self, simplifiedWeapons):
@@ -72,8 +73,9 @@ class Vault:
         #this dict is for storing the intrinsic anti-champion perks of exotics
         exoticIntrinsics = {"Arbalest": "barrier", "Eriana's Vow": "barrier", "The Lament": "barrier", "Revision Zero": "barrier",
                             "Wish-Ender": "barrier", "Divinity": "overload", "Le Monarque": "overload", "Ruinous Effigy": "overload",
-                            "Thunderlord": "overload", "Wavesplitter": "overload", "Bastion": "unstoppable", "Devil's Ruin": "unstoppable",
-                            "Leviathan's Breath": "unstoppable", "Malfeasance": "unstoppable",}
+                            "Thunderlord": "overload", "Wavesplitter": "overload", "Bastion": "unstoppable",
+                            "Leviathan's Breath": "unstoppable", "Malfeasance": "unstoppable", "Conditional Finality": "overload", "Conditional Finality": "unstoppable"}
+        metaExotics = ["Wish-Ender", "Le Monarque", "Gjallarhorn", "Arbalest", "Conditional Finality", "Thunderlord", "Leviathan's Breath"]
         dailySector = LostSector.initializeSeasonalLostSectors()[0] #this is VERY temporary for debugging
         for weapon in simplifiedWeapons:
             currWepScore = 0
@@ -82,7 +84,7 @@ class Vault:
                 currWepScore += 5
             #bonus points if champ and surge match
             if weapon.getChampion() in dailySector.getChamps() and weapon.getElement() == dailySector.getSurge():
-                currWepScore += 30
+                currWepScore += 20
             #champs
             elif weapon.getChampion() in dailySector.getChamps():
                 currWepScore += 10
@@ -91,10 +93,42 @@ class Vault:
                 currWepScore += 10
             #exotic intrinsics
             if weapon.getRarity() == "Exotic" and exoticIntrinsics.get(weapon.getName()) in dailySector.getChamps():
-                currWepScore += 40
+                currWepScore += 25
+                if weapon.getAmmoType() == "special" or weapon.getAmmoType() == "heavy":
+                    currWepScore += 10
+                if weapon in metaExotics:
+                    currWepScore += 25
             weapon.setWeaponScore(currWepScore)
             #overcharge wep -- WIP (need overcharged weapon data for lost sectors)
 
-            #TODO:develop loadout optimization (such as the requirements of only 1 special, heavy primary, only one exotic, meeting both champ requirements, etc...)
-            #TODO:weigh certain meta weapon types more favorably, maybe even specific meta weapons. 
+def generateLoadout(scoredWeapons):
+#TODO: FIX MULTIPLE EXOTIC GLITCH, DIFFERENTIATE BETWEEN KINETIC STAND STASIS AND SOLAR VOID ARC FOR FIRST AND SECOND SLOTS
+
+    dailySector = LostSector.getSectorByDate('04/18/2023')
+    hasExotic, hasPrimary, hasSpecial, hasHeavy = False, False, False, False
+    champions = {dailySector.getChamps()[0]: False, dailySector.getChamps()[1]: False}
+
+    for weapon in scoredWeapons:
+        if weapon.getRarity() == "exotic" and hasExotic == False:
+            hasExotic == True
+        if weapon.getRarity == "exotic" and hasExotic == True:
+            break
+        if not hasPrimary and weapon.getAmmoType() == "primary" and not champions.get(weapon.getChampion()):
+            hasPrimary = True
+            champions[weapon.getChampion()] = True
+            equippedPrimary = weapon.getName()
+
+        if not hasSpecial and weapon.getAmmoType() == "special" and not champions.get(weapon.getChampion()):
+            hasSpecial = True
+            champions[weapon.getChampion()] = True
+            equippedSpecial = weapon.getName()
+
+        if not hasHeavy and weapon.getAmmoType() == "heavy" and not champions.get(weapon.getChampion()):
+            hasHeavy = True
+            champions[weapon.getChampion()] = True
+            equippedHeavy = weapon.getName()
+
+    print("Primary: " + equippedPrimary)
+    print("Special: " + equippedSpecial)
+    print("Heavy: " + equippedHeavy)
     
