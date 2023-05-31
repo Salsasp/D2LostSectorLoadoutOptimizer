@@ -44,6 +44,9 @@ async def main():
        dehashedItem = await destiny.decode_hash(hash['itemHash'], 'DestinyInventoryItemDefinition')
        if dehashedItem['itemType'] != 3:
            continue
+       powerCap = await destiny.decode_hash(dehashedItem["quality"]["versions"][0]["powerCapHash"], 'DestinyPowerCapDefinition')
+       if powerCap["powerCap"] == 1060:
+           continue
        decodedWeapons.append(dehashedItem) 
     simplifiedWeapons = generateSimplifiedWeapons(decodedWeapons, destiny)
     pv = playerVault.Vault(vaultData, simplifiedWeapons)

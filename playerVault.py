@@ -72,11 +72,10 @@ class Vault:
         
         #this dict is for storing the intrinsic anti-champion perks of exotics
         exoticIntrinsics = {"Arbalest": "barrier", "Eriana's Vow": "barrier", "The Lament": "barrier", "Revision Zero": "barrier",
-                            "Wish-Ender": "barrier", "Divinity": "overload", "Le Monarque": "overload", "Ruinous Effigy": "overload",
-                            "Thunderlord": "overload", "Wavesplitter": "overload", "Bastion": "unstoppable",
+                            "Wish-Ender": "barrier", "Divinity": "overload", "Le Monarque": "overload","Thunderlord": "overload", "Bastion": "unstoppable",
                             "Leviathan's Breath": "unstoppable", "Malfeasance": "unstoppable", "Conditional Finality": "overload", "Conditional Finality": "unstoppable"}
         metaExotics = ["Wish-Ender", "Le Monarque", "Gjallarhorn", "Arbalest", "Conditional Finality", "Thunderlord", "Leviathan's Breath"]
-        dailySector = LostSector.initializeSeasonalLostSectors()[0] #this is VERY temporary for debugging
+        dailySector = LostSector.getSectorByDate('04/19/2023') #this is VERY temporary for debugging
         for weapon in simplifiedWeapons:
             currWepScore = 0
             #energy
@@ -104,29 +103,57 @@ class Vault:
 def generateLoadout(scoredWeapons):
 #TODO: FIX MULTIPLE EXOTIC GLITCH, DIFFERENTIATE BETWEEN KINETIC STAND STASIS AND SOLAR VOID ARC FOR FIRST AND SECOND SLOTS
 
-    dailySector = LostSector.getSectorByDate('04/18/2023')
-    hasExotic, hasPrimary, hasSpecial, hasHeavy = False, False, False, False
+    dailySector = LostSector.getSectorByDate('04/19/2023')
+    hasExotic, hasPrimary, hasSpecial, hasHeavy, firstSlotOccupied, secondSlotOccupied = False, False, False, False, False, False
     champions = {dailySector.getChamps()[0]: False, dailySector.getChamps()[1]: False}
+    #TODO: if both champ slots are true, the 3rd weapon does not need to check
+    firstSlotElements = ["kinetic", "stasis", "strand"]
+    secondSlotElements = ["arc", "solar", "void"]
 
     for weapon in scoredWeapons:
-        if weapon.getRarity() == "exotic" and hasExotic == False:
-            hasExotic == True
-        if weapon.getRarity == "exotic" and hasExotic == True:
-            break
+        if weapon.getRarity() == "Exotic" and hasExotic == True:
+            continue
+        if weapon.getRarity() == "Exotic" and hasExotic == False:
+            hasExotic = True
+
+        #primary weapon
         if not hasPrimary and weapon.getAmmoType() == "primary" and not champions.get(weapon.getChampion()):
+            if firstSlotOccupied and weapon.getElement() in firstSlotElements: #continue loop if weapon slot is full
+                continue
+            if secondSlotOccupied and weapon.getElement() in secondSlotElements: #continue loop if weapon slot is full
+                continue
+            if not firstSlotOccupied and weapon.getElement() in firstSlotElements: #check if weapon can fit in first slot
+                firstSlotOccupied = True
+            if not firstSlotOccupied and weapon.getElement() in secondSlotElements: #check if weapon can fit in second slot
+                secondSlotOccupied = True
             hasPrimary = True
-            champions[weapon.getChampion()] = True
+            if not weapon.getChampion() == "empty":
+                champions[weapon.getChampion()] = True
             equippedPrimary = weapon.getName()
 
+        #special weapon
         if not hasSpecial and weapon.getAmmoType() == "special" and not champions.get(weapon.getChampion()):
+            if firstSlotOccupied and weapon.getElement() in firstSlotElements: #continue loop if weapon slot is full
+                continue
+            if secondSlotOccupied and weapon.getElement() in secondSlotElements:
+                continue
+            if not firstSlotOccupied and weapon.getElement() in firstSlotElements: #check if weapon can fit in first slot
+                firstSlotOccupied = True
+            if not firstSlotOccupied and weapon.getElement() in secondSlotElements: #check if weapon can fit in second slot
+                secondSlotOccupied = True
             hasSpecial = True
-            champions[weapon.getChampion()] = True
+            if not weapon.getChampion() == "empty":
+                champions[weapon.getChampion()] = True
             equippedSpecial = weapon.getName()
 
+        #heavy weapon
         if not hasHeavy and weapon.getAmmoType() == "heavy" and not champions.get(weapon.getChampion()):
             hasHeavy = True
-            champions[weapon.getChampion()] = True
+            if not weapon.getChampion() == "empty":
+                champions[weapon.getChampion()] = True
             equippedHeavy = weapon.getName()
+        if hasPrimary and hasSpecial and hasHeavy:
+            break
 
     print("Primary: " + equippedPrimary)
     print("Special: " + equippedSpecial)
