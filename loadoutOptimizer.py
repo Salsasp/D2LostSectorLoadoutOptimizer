@@ -2,7 +2,58 @@ import pydest
 import asyncio
 import playerVault
 import destinyweapon
-import LostSector
+from tkinter import *
+from tkinter import ttk
+import tkinter as tk
+import webbrowser
+
+#function for making gui window
+def window(pv):
+    root = tk.Tk()
+    frame = ttk.Frame(root, padding=20)
+    frame.grid()
+    ttk.Label(frame, text="Destiny 2 Lost Sector Loadout Recommender").grid(row=0,column=0)
+    quitButton = ttk.Button(frame, text="QUIT", command=root.destroy).grid(row=0,column=2,ipadx=0,ipady=0)
+
+    #authorization button
+    ttk.Label(frame, text="Authorize Bungie Account").grid(row=2,column=0)
+    ttk.Button(frame,text="Authorize", command=openAuthPortal).grid(row=3,column=0)
+
+    #date entry for lost sector
+    ttk.Label(frame, text="Enter Date:").grid(row=4, column=0)
+    ttk.Entry(frame).grid(row=4, column=2)
+
+    #generate loadout button
+    primaryWepLabel = ttk.Label(frame, text="")
+    primaryWepLabel.grid(row=9, column=0)
+    specialWepLabel = ttk.Label(frame, text="")
+    specialWepLabel.grid(row=9, column=1)
+    heavyWepLabel = ttk.Label(frame, text="")
+    heavyWepLabel.grid(row=9, column=2)
+
+    #TODO: make the lost sector date change dynamically based on user input in gui (remove function calls in main and move them to window)
+    
+    ttk.Button(frame, text="Generate Loadout!", command=lambda: displayLoadout(primaryWepLabel, specialWepLabel, heavyWepLabel, pv)).grid(row=8,column=1)
+
+    #loadout section
+    ttk.Label(frame, text="-- Recommended Loadout --").grid(row=7, column=1, ipadx=10,ipady=10)
+
+
+    root.mainloop()
+
+def openAuthPortal():
+    webbrowser.open_new_tab("https://www.bungie.net/en/oauth/authorize")
+
+def displayLoadout(label1, label2, label3, pv):
+    primaryString = "Primary: " + pv.getRecPrimary()
+    specialString = "Special: " + pv.getRecSpecial()
+    heavyString = "Heavy: " + pv.getRecHeavy()
+    label1.config(text=primaryString)
+    label2.config(text=specialString)
+    label3.config(text=heavyString)
+    label1.update()
+    label2.update()
+    label3.update()
 
 damageTypes = {1:'kinetic', 2:'arc', 3:'solar', 4:'void', 6:'stasis', 7:'strand'}
 ammoTypes = {1: 'primary', 2: 'special', 3: 'heavy'}
@@ -50,7 +101,7 @@ async def main():
        decodedWeapons.append(dehashedItem) 
     simplifiedWeapons = generateSimplifiedWeapons(decodedWeapons, destiny)
     pv = playerVault.Vault(vaultData, simplifiedWeapons)
-    print()
+    window(pv)
 
     await destiny.close()
     

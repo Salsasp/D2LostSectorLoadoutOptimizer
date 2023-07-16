@@ -10,8 +10,18 @@ class Vault:
         self.simplifiedWeapons = simplifiedWeapons
         self.generateWeaponScores(simplifiedWeapons)
         weaponsByScore = sorted(self.simplifiedWeapons, key = lambda x: destinyweapon.DestinyWeapon.getWeaponScoreByWeapon(x), reverse=True)
-        generateLoadout(weaponsByScore)
+        self.recPrimary = ""
+        self.recSpecial = ""
+        self.recHeavy = ""
+        generateLoadout(self, weaponsByScore)
         print()
+
+    def getRecPrimary(self):
+        return self.recPrimary
+    def getRecSpecial(self):
+        return self.recSpecial 
+    def getRecHeavy(self):
+        return self.recHeavy
 
     def sortWeaponsByAttributes(self, simplifiedWeapons):
         arc = []; solar = []; void = [] 
@@ -75,7 +85,7 @@ class Vault:
                             "Wish-Ender": "barrier", "Divinity": "overload", "Le Monarque": "overload","Thunderlord": "overload", "Bastion": "unstoppable",
                             "Leviathan's Breath": "unstoppable", "Malfeasance": "unstoppable", "Conditional Finality": "overload", "Conditional Finality": "unstoppable"}
         metaExotics = ["Wish-Ender", "Le Monarque", "Gjallarhorn", "Arbalest", "Conditional Finality", "Thunderlord", "Leviathan's Breath"]
-        dailySector = LostSector.getSectorByDate('04/19/2023') #this is VERY temporary for debugging
+        dailySector = LostSector.getSectorByDate('04/30/2023') #this is VERY temporary for debugging
         for weapon in simplifiedWeapons:
             currWepScore = 0
             #energy
@@ -100,10 +110,10 @@ class Vault:
             weapon.setWeaponScore(currWepScore)
             #overcharge wep -- WIP (need overcharged weapon data for lost sectors)
 
-def generateLoadout(scoredWeapons):
+def generateLoadout(self, scoredWeapons):
 #TODO: FIX MULTIPLE EXOTIC GLITCH, DIFFERENTIATE BETWEEN KINETIC STAND STASIS AND SOLAR VOID ARC FOR FIRST AND SECOND SLOTS
 
-    dailySector = LostSector.getSectorByDate('04/19/2023')
+    dailySector = LostSector.getSectorByDate('04/30/2023')
     hasExotic, hasPrimary, hasSpecial, hasHeavy, firstSlotOccupied, secondSlotOccupied = False, False, False, False, False, False
     champions = {dailySector.getChamps()[0]: False, dailySector.getChamps()[1]: False}
     #TODO: if both champ slots are true, the 3rd weapon does not need to check
@@ -154,7 +164,10 @@ def generateLoadout(scoredWeapons):
             equippedHeavy = weapon.getName()
         if hasPrimary and hasSpecial and hasHeavy:
             break
-
+    
+    self.recPrimary = equippedPrimary
+    self.recSpecial = equippedSpecial
+    self.recHeavy = equippedHeavy
     print("Primary: " + equippedPrimary)
     print("Special: " + equippedSpecial)
     print("Heavy: " + equippedHeavy)
