@@ -6,6 +6,8 @@ from tkinter import *
 from tkinter import ttk
 import tkinter as tk
 import webbrowser
+import LostSector
+import datetime
 
 #function for making gui window
 def window(pv):
@@ -23,48 +25,83 @@ def window(pv):
     ttk.Label(frame, text="Enter Date:").grid(row=4, column=0)
     dateEntry = ttk.Entry(frame)
     dateEntry.grid(row=4, column=1)
-    ttk.Button(frame, text="submit",command=lambda:pv.setDate(dateEntry.get())).grid(row=4,column=2)
+    ttk.Button(frame, text="submit",command=lambda:dateSubmit(dateErrorMsg, lsNameLabel, lsRewardLabel, lsChampionsLabel, lsSurgeLabel, dateEntry.get(), pv)).grid(row=4,column=2)
     dateErrorMsg = ttk.Label(frame, text="Use xx/xx/xxxx format")
     dateErrorMsg.grid(row=4, column=3)
     #TODO: implement error catching for incorrectly formatted dates, or a different date input system, finish authentication process
 
     #generate loadout button
     primaryWepLabel = ttk.Label(frame, text="")
-    primaryWepLabel.grid(row=9, column=0)
+    primaryWepLabel.grid(row=11, column=0)
     specialWepLabel = ttk.Label(frame, text="")
-    specialWepLabel.grid(row=9, column=1)
+    specialWepLabel.grid(row=11, column=1)
     heavyWepLabel = ttk.Label(frame, text="")
-    heavyWepLabel.grid(row=9, column=2)
+    heavyWepLabel.grid(row=11, column=2)
     
-    ttk.Button(frame, text="Generate Loadout!", command=lambda: displayLoadout(dateErrorMsg, primaryWepLabel, specialWepLabel, heavyWepLabel, pv)).grid(row=8,column=1)
+    #TODO: add a section that displays all the relevant aspects of the lost sector for the user to see
+    #name, reward, location, shields, champions, surge
+    ttk.Label(frame, text="-- Lost Sector Info --").grid(row=7, column=1, ipadx=10, ipady=10)
+    lsNameLabel = ttk.Label(frame, text="Name:")
+    lsNameLabel.grid(row=8,column=0)
+    lsRewardLabel = ttk.Label(frame,text="Reward:")
+    lsRewardLabel.grid(row=8,column=1)
+    lsChampionsLabel = ttk.Label(frame,text="Champions:")
+    lsChampionsLabel.grid(row=8, column=2)
+    lsSurgeLabel = ttk.Label(frame, text="Surge:")
+    lsSurgeLabel.grid(row=8,column=3)
 
     #loadout section
-    ttk.Label(frame, text="-- Recommended Loadout --").grid(row=7, column=1, ipadx=10,ipady=10)
-
+    ttk.Label(frame, text="-- Recommended Loadout --").grid(row=10, column=1, ipadx=10,ipady=10)
+    ttk.Button(frame, text="Generate Loadout!", command=lambda: generate(dateErrorMsg, primaryWepLabel, specialWepLabel, heavyWepLabel, pv)).grid(row=9,column=1)
 
     root.mainloop()
 
-def openAuthPortal():
+def openAuthPortal(): #oauth will never be functional unless I rewrite this program in javascript or use django black magic
     webbrowser.open_new_tab("https://www.bungie.net/en/oauth/authorize")
 
-def displayLoadout(errorMsg, label1, label2, label3, pv):
+def dateSubmit(dateErrorMsg, label1, label2, label3, label4, date, pv):
+    try:
+        pv.setDate(date)
+        dailysector = LostSector.getSectorByDate(date)
+        label1.config(text="Name: " + dailysector.getName())
+        label2.config(text="Reward: " + dailysector.getReward())
+        label3.config(text="Champions: " + str(dailysector.getChamps()))
+        label4.config(text="Surge: " + dailysector.getSurge())
+        label1.update()
+        label2.update()
+        label3.update()
+        label4.update()
+        dateErrorMsg.config(text="", foreground="black")
+    except BaseException:
+        dateErrorMsg.config(text="Invalid Date",foreground="red")
+        dateErrorMsg.update()
+        return
+
+
+def generate(errorMsg, label1, label2, label3, pv):
     errorMsg.update()
+    format = "%m/%d/%Y"
     if(pv.getDate() == ""):
         errorMsg.config(text="Please enter a date",foreground="red")
         errorMsg.update()
         return
     else: errorMsg.config(text="")
-    pv.processWeapons()
-    primaryString = "Primary: " + pv.getRecPrimary()
-    specialString = "Special: " + pv.getRecSpecial()
-    heavyString = "Heavy: " + pv.getRecHeavy()
-    label1.config(text=primaryString)
-    label2.config(text=specialString)
-    label3.config(text=heavyString)
-    label1.update()
-    label2.update()
-    label3.update()
-    
+    try:
+        pv.processWeapons()
+        primaryString = "Primary: " + pv.getRecPrimary()
+        specialString = "Special: " + pv.getRecSpecial()
+        heavyString = "Heavy: " + pv.getRecHeavy()
+        label1.config(text=primaryString)
+        label2.config(text=specialString)
+        label3.config(text=heavyString)
+        label1.update()
+        label2.update()
+        label3.update()
+    except AttributeError:
+        errorMsg.config(text="Please format correctly",foreground="red")
+        errorMsg.update()
+        return
+
 
 damageTypes = {1:'kinetic', 2:'arc', 3:'solar', 4:'void', 6:'stasis', 7:'strand'}
 ammoTypes = {1: 'primary', 2: 'special', 3: 'heavy'}

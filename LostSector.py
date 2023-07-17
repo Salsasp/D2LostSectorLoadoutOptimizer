@@ -25,6 +25,10 @@ class LostSector:
         return self.surge
     def getDate(self):
         return self.date
+    def getReward(self):
+        return self.reward
+    def getName(self):
+        return self.name
 
 def initializeSeasonalLostSectors():
     date, champions, shields, seasonalSectors = [], [], [], []
