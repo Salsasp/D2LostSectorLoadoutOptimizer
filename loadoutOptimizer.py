@@ -21,7 +21,12 @@ def window(pv):
 
     #date entry for lost sector
     ttk.Label(frame, text="Enter Date:").grid(row=4, column=0)
-    ttk.Entry(frame).grid(row=4, column=2)
+    dateEntry = ttk.Entry(frame)
+    dateEntry.grid(row=4, column=1)
+    ttk.Button(frame, text="submit",command=lambda:pv.setDate(dateEntry.get())).grid(row=4,column=2)
+    dateErrorMsg = ttk.Label(frame, text="Use xx/xx/xxxx format")
+    dateErrorMsg.grid(row=4, column=3)
+    #TODO: implement error catching for incorrectly formatted dates, or a different date input system, finish authentication process
 
     #generate loadout button
     primaryWepLabel = ttk.Label(frame, text="")
@@ -30,10 +35,8 @@ def window(pv):
     specialWepLabel.grid(row=9, column=1)
     heavyWepLabel = ttk.Label(frame, text="")
     heavyWepLabel.grid(row=9, column=2)
-
-    #TODO: make the lost sector date change dynamically based on user input in gui (remove function calls in main and move them to window)
     
-    ttk.Button(frame, text="Generate Loadout!", command=lambda: displayLoadout(primaryWepLabel, specialWepLabel, heavyWepLabel, pv)).grid(row=8,column=1)
+    ttk.Button(frame, text="Generate Loadout!", command=lambda: displayLoadout(dateErrorMsg, primaryWepLabel, specialWepLabel, heavyWepLabel, pv)).grid(row=8,column=1)
 
     #loadout section
     ttk.Label(frame, text="-- Recommended Loadout --").grid(row=7, column=1, ipadx=10,ipady=10)
@@ -44,7 +47,14 @@ def window(pv):
 def openAuthPortal():
     webbrowser.open_new_tab("https://www.bungie.net/en/oauth/authorize")
 
-def displayLoadout(label1, label2, label3, pv):
+def displayLoadout(errorMsg, label1, label2, label3, pv):
+    errorMsg.update()
+    if(pv.getDate() == ""):
+        errorMsg.config(text="Please enter a date",foreground="red")
+        errorMsg.update()
+        return
+    else: errorMsg.config(text="")
+    pv.processWeapons()
     primaryString = "Primary: " + pv.getRecPrimary()
     specialString = "Special: " + pv.getRecSpecial()
     heavyString = "Heavy: " + pv.getRecHeavy()
@@ -54,6 +64,7 @@ def displayLoadout(label1, label2, label3, pv):
     label1.update()
     label2.update()
     label3.update()
+    
 
 damageTypes = {1:'kinetic', 2:'arc', 3:'solar', 4:'void', 6:'stasis', 7:'strand'}
 ammoTypes = {1: 'primary', 2: 'special', 3: 'heavy'}
