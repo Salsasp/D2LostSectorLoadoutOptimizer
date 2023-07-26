@@ -3,12 +3,31 @@ import asyncio
 import playerVault
 import destinyweapon
 import LostSector
+import sys
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QApplication, QMainWindow
+
+
+def window(): #function to handle application gui
+    app = QApplication(sys.argv)
+    win = QMainWindow()
+    win.setGeometry(0, 0, 500, 500)
+    win.setWindowTitle("Destiny 2 Lost Sector Loadout Suggestor")
+    titleLabel = QtWidgets.QLabel(win)
+    titleLabel.setText("Destiny 2 Lost Sector Loadout Suggestor")
+    titleLabel.move((int)((win.width()/2)-titleLabel.width()/2), 0) #create title centered at top of screen
+
+    win.show()
+    sys.exit(app.exec_())
 
 damageTypes = {1:'kinetic', 2:'arc', 3:'solar', 4:'void', 6:'stasis', 7:'strand'}
 ammoTypes = {1: 'primary', 2: 'special', 3: 'heavy'}
 platforms = {'XBOX': 1, 'PLAYSTATION': 2, 'PC': 3}
 seasonalChampionMods = {'Auto Rifle': 'barrier', 'Glaive': 'unstoppable', 'Hand Cannon': 'unstoppable', 'Scout Rifle': 'overload', 'Trace Rifle': 'overload'}
-            
+mainURL = "https://www.bungie.net/Platform/Destiny2/"
+authorizationURL = "https://www.bungie.net/en/OAuth/Authorize" 
+tokenURL = "https://www.bungie.net/Platform/App/OAuth/token/" 
+
 def generateSimplifiedWeapons(weaponData, destiny):
     simplifiedWeapons=list()
     for weapon in weaponData:
@@ -36,7 +55,7 @@ async def main():
     else:
         print("Could not locate player.")
 
-    vaultData = await destiny.api._get_request("https://www.bungie.net/Platform/Destiny2/"+str(platform)+"/Profile/"+str(userResponse['Response'][0]['membershipId'])+"/?components=102")
+    vaultData = await destiny.api._get_request(mainURL+str(platform)+"/Profile/"+str(userResponse['Response'][0]['membershipId'])+"/?components=102")
     items = vaultData['Response']['profileInventory']['data']['items']
     decodedWeapons = []
 
@@ -49,10 +68,11 @@ async def main():
            continue
        decodedWeapons.append(dehashedItem) 
     simplifiedWeapons = generateSimplifiedWeapons(decodedWeapons, destiny)
-    pv = playerVault.Vault(vaultData, simplifiedWeapons)
-    print()
-
     await destiny.close()
+    pv = playerVault.Vault(vaultData, simplifiedWeapons)
+    window()
+
+    
     
 
 main()

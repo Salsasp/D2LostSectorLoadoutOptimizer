@@ -1,5 +1,3 @@
-import pydest
-import asyncio
 import LostSector
 import destinyweapon
 #TODO: add code to dehash all weapons in player vault, add them to a list, and use some sort of data structure(undetermined) to sort weapons based on their different attributes
@@ -9,12 +7,12 @@ class Vault:
         self.weaponData = playerVaultData
         self.simplifiedWeapons = simplifiedWeapons
         self.generateWeaponScores(simplifiedWeapons)
-        weaponsByScore = sorted(self.simplifiedWeapons, key = lambda x: destinyweapon.DestinyWeapon.getWeaponScoreByWeapon(x), reverse=True)
+        weaponsByScore = sorted(self.simplifiedWeapons, key = lambda x: destinyweapon.DestinyWeapon.getWeaponScoreByWeapon(x), reverse=True) #sort weapons by their given score
         generateLoadout(weaponsByScore)
         print()
 
-    def sortWeaponsByAttributes(self, simplifiedWeapons):
-        arc = []; solar = []; void = [] 
+    def sortWeaponsByAttributes(self, simplifiedWeapons):#function that creates dictionaries of weapons based on different properties
+        arc = []; solar = []; void = []                  #currently useless function, may have uses later
         barrier = []; unstoppable = []; overload = []
         legendary = []; exotic = []
         primary = []; special = []; heavy = []
@@ -65,7 +63,7 @@ class Vault:
         self.elements = {"arc": arc, "solar": solar, "void": void}
 
     def generateWeaponScores(self, simplifiedWeapons):
-        #use this function to assign a number to each weapon based off of how many favorable modifiers it reaches when comparing
+        #assign a number to each weapon based off of how many favorable modifiers it reaches when comparing
         #its attributes to the daily lost sector champions, surge, etc.
         #surge and overcharge will be weighted more heavily than champ type and shield elements
         #exotics with innate champion perks will be weighted most heavily
@@ -75,7 +73,7 @@ class Vault:
                             "Wish-Ender": "barrier", "Divinity": "overload", "Le Monarque": "overload","Thunderlord": "overload", "Bastion": "unstoppable",
                             "Leviathan's Breath": "unstoppable", "Malfeasance": "unstoppable", "Conditional Finality": "overload", "Conditional Finality": "unstoppable"}
         metaExotics = ["Wish-Ender", "Le Monarque", "Gjallarhorn", "Arbalest", "Conditional Finality", "Thunderlord", "Leviathan's Breath"]
-        dailySector = LostSector.getSectorByDate('04/19/2023') #this is VERY temporary for debugging
+        dailySector = LostSector.getSectorByDate('04/30/2023') #this is VERY temporary for debugging, ideally a function is created for fetching daily lost sector
         for weapon in simplifiedWeapons:
             currWepScore = 0
             #energy
@@ -101,9 +99,7 @@ class Vault:
             #overcharge wep -- WIP (need overcharged weapon data for lost sectors)
 
 def generateLoadout(scoredWeapons):
-#TODO: FIX MULTIPLE EXOTIC GLITCH, DIFFERENTIATE BETWEEN KINETIC STAND STASIS AND SOLAR VOID ARC FOR FIRST AND SECOND SLOTS
-
-    dailySector = LostSector.getSectorByDate('04/19/2023')
+    dailySector = LostSector.getSectorByDate('04/30/2023')
     hasExotic, hasPrimary, hasSpecial, hasHeavy, firstSlotOccupied, secondSlotOccupied = False, False, False, False, False, False
     champions = {dailySector.getChamps()[0]: False, dailySector.getChamps()[1]: False}
     #TODO: if both champ slots are true, the 3rd weapon does not need to check
