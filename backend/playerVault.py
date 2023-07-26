@@ -1,18 +1,36 @@
+import pydest
+import asyncio
 import LostSector
 import destinyweapon
-#TODO: add code to dehash all weapons in player vault, add them to a list, and use some sort of data structure(undetermined) to sort weapons based on their different attributes
+#ULTRA TODO: rewrite this program in javascript in order to implement it as a website, which will allow for easy oauth
 class Vault: 
 
     def __init__(self, playerVaultData, simplifiedWeapons):
         self.weaponData = playerVaultData
         self.simplifiedWeapons = simplifiedWeapons
-        self.generateWeaponScores(simplifiedWeapons)
-        weaponsByScore = sorted(self.simplifiedWeapons, key = lambda x: destinyweapon.DestinyWeapon.getWeaponScoreByWeapon(x), reverse=True) #sort weapons by their given score
-        generateLoadout(weaponsByScore)
+        self.recPrimary = ""
+        self.recSpecial = ""
+        self.recHeavy = ""
+        self.date = ""
         print()
 
-    def sortWeaponsByAttributes(self, simplifiedWeapons):#function that creates dictionaries of weapons based on different properties
-        arc = []; solar = []; void = []                  #currently useless function, may have uses later
+    def processWeapons(self): #function to allow recommendations to be generated on command, rather than in constructor
+        self.generateWeaponScores(self.simplifiedWeapons)
+        weaponsByScore = sorted(self.simplifiedWeapons, key = lambda x: destinyweapon.DestinyWeapon.getWeaponScoreByWeapon(x), reverse=True)
+        generateLoadout(self, weaponsByScore)
+    def getRecPrimary(self):
+        return self.recPrimary
+    def getRecSpecial(self):
+        return self.recSpecial 
+    def getRecHeavy(self):
+        return self.recHeavy
+    def setDate(self, date): #set date of lost sector for rec generation
+        self.date = date
+    def getDate(self):
+        return self.date
+
+    def sortWeaponsByAttributes(self, simplifiedWeapons): #currently useless function
+        arc = []; solar = []; void = [] 
         barrier = []; unstoppable = []; overload = []
         legendary = []; exotic = []
         primary = []; special = []; heavy = []
@@ -63,7 +81,7 @@ class Vault:
         self.elements = {"arc": arc, "solar": solar, "void": void}
 
     def generateWeaponScores(self, simplifiedWeapons):
-        #assign a number to each weapon based off of how many favorable modifiers it reaches when comparing
+        #use this function to assign a number to each weapon based off of how many favorable modifiers it reaches when comparing
         #its attributes to the daily lost sector champions, surge, etc.
         #surge and overcharge will be weighted more heavily than champ type and shield elements
         #exotics with innate champion perks will be weighted most heavily
@@ -73,7 +91,9 @@ class Vault:
                             "Wish-Ender": "barrier", "Divinity": "overload", "Le Monarque": "overload","Thunderlord": "overload", "Bastion": "unstoppable",
                             "Leviathan's Breath": "unstoppable", "Malfeasance": "unstoppable", "Conditional Finality": "overload", "Conditional Finality": "unstoppable"}
         metaExotics = ["Wish-Ender", "Le Monarque", "Gjallarhorn", "Arbalest", "Conditional Finality", "Thunderlord", "Leviathan's Breath"]
-        dailySector = LostSector.getSectorByDate('04/30/2023') #this is VERY temporary for debugging, ideally a function is created for fetching daily lost sector
+        dailySector = LostSector.getSectorByDate(self.date)
+
+        #loop to determine reccomendation score for weapons
         for weapon in simplifiedWeapons:
             currWepScore = 0
             #energy
@@ -95,11 +115,14 @@ class Vault:
                     currWepScore += 10
                 if weapon in metaExotics:
                     currWepScore += 25
+            if weapon.getRarity() == "Rare":
+                currWepScore -= 25
             weapon.setWeaponScore(currWepScore)
-            #overcharge wep -- WIP (need overcharged weapon data for lost sectors)
+            #TODO: overcharge wep -- WIP (need overcharged weapon data for lost sectors)
 
-def generateLoadout(scoredWeapons):
-    dailySector = LostSector.getSectorByDate('04/30/2023')
+def generateLoadout(self, scoredWeapons):
+
+    dailySector = LostSector.getSectorByDate(self.date)
     hasExotic, hasPrimary, hasSpecial, hasHeavy, firstSlotOccupied, secondSlotOccupied = False, False, False, False, False, False
     champions = {dailySector.getChamps()[0]: False, dailySector.getChamps()[1]: False}
     #TODO: if both champ slots are true, the 3rd weapon does not need to check
@@ -107,6 +130,7 @@ def generateLoadout(scoredWeapons):
     secondSlotElements = ["arc", "solar", "void"]
 
     for weapon in scoredWeapons:
+        #ensure that there is only one exotic in loadout
         if weapon.getRarity() == "Exotic" and hasExotic == True:
             continue
         if weapon.getRarity() == "Exotic" and hasExotic == False:
@@ -150,7 +174,10 @@ def generateLoadout(scoredWeapons):
             equippedHeavy = weapon.getName()
         if hasPrimary and hasSpecial and hasHeavy:
             break
-
+    
+    self.recPrimary = equippedPrimary
+    self.recSpecial = equippedSpecial
+    self.recHeavy = equippedHeavy
     print("Primary: " + equippedPrimary)
     print("Special: " + equippedSpecial)
     print("Heavy: " + equippedHeavy)

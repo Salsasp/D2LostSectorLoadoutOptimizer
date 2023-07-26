@@ -8,10 +8,6 @@ class LostSector:
         self.shields = shields
         self.champions = champions
         self.surge = surge
-    #def __init__(self, shields, champions, surge):
-    #    self.shields = shields
-    #    self.champions = champions
-    #    self.surge = surge
     def display(self):
         print("Lost Sector: " + self.name + ", " + self.day_of_week + " " + self.date + ", " + self.location\
         + ", " + self.reward + ", ", end='') 
@@ -71,4 +67,5 @@ def getSectorByDate(date):
     for sector in sectors:
         if sector.getDate() == date:
             return sector
+    raise BaseException("Invalid Date")
 
