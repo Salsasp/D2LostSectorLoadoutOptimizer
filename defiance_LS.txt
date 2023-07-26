@@ -1,0 +1,203 @@
+Tuesday	04/18/2023	The_Quarry	EDZ	Void
+Solar Void
+Barrier
+Unstoppable
+Helmet
+
+Wednesday	04/19/2023	Aphellion's_Rest	Dreaming_City	Stasis
+Void
+Unstoppable
+Overload
+Leg
+
+Thursday	04/20/2023	Chamber_of_Starlight	Dreaming_City	Solar
+Solar Void
+Unstoppable
+Overload
+Arm
+
+Friday	04/21/2023	Perdition	Europa	Arc
+Arc Void
+Barrier
+Overload
+Torso
+
+Saturday	04/22/2023	Bunker_E15	Europa	Void
+Void
+Barrier
+Overload
+Helmet
+
+Sunday	04/23/2023	The_Conflux	Nessus	Solar
+Void
+Barrier
+Unstoppable
+Leg
+
+Monday	04/24/2023	Thrilladrome	Neomuna	Void
+Arc Void
+Barrier
+Overload
+Arm
+
+Tuesday	04/25/2023	Hydroponics_Delta	Neomuna	Void
+Solar Arc
+Barrier
+Unstoppable
+Torso
+
+Wednesday	04/26/2023	Gilded_Precept	Neomuna	Void
+Solar Void
+Barrier
+Unstoppable
+Helmet
+
+Thursday	04/27/2023	Excavation_Site_XII	EDZ	Solar
+Arc
+Barrier
+Unstoppable
+Leg
+
+Friday	04/28/2023	Flight_Dock_IV	EDZ	Solar
+Void
+Barrier
+Unstoppable
+Arm
+
+Saturday	04/29/2023	The_Quarry	EDZ	Void
+Solar Void
+Barrier
+Unstoppable
+Torso
+
+Sunday	04/30/2023	Aphellion's_Rest	Dreaming_City	Stasis
+Void
+Unstoppable
+Overload
+Helmet
+
+Monday	05/01/2023	Chamber_of_Starlight	Dreaming_City	Solar
+Solar Void
+Unstoppable
+Overload
+Leg
+
+Tuesday	05/02/2023	Perdition	Europa	Arc
+Arc Void
+Barrier
+Overload
+Arm
+
+Wednesday	05/03/2023	Bunker_E15	Europa	Void
+Void
+Barrier
+Overload
+Torso
+
+Thursday	05/04/2023	The_Conflux	Nessus	Solar
+Void
+Barrier
+Unstoppable
+Helmet
+
+Friday	05/05/2023	Thrilladrome	Neomuna	Void
+Arc Void
+Barrier
+Overload
+Leg
+
+Saturday	05/06/2023	Hydroponics_Delta	Neomuna	Void
+Solar Arc
+Barrier
+Unstoppable
+Arm
+
+Sunday	05/07/2023	Gilded_Precept	Neomuna	Void
+Solar Void
+Barrier
+Unstoppable
+Torso
+
+Monday	05/08/2023	Excavation_Site_XII	EDZ	Solar
+Arc
+Barrier
+Unstoppable
+Helmet
+
+Tuesday	05/09/2023	Flight_Dock_IV	EDZ	Solar
+Void
+Barrier
+Unstoppable
+Leg
+
+Wednesday	05/10/2023	The_Quarry	EDZ	Void
+Solar Void
+Barrier
+Unstoppable
+Arm
+
+Thursday	05/11/2023	Aphellion's_Rest	Dreaming_City	Stasis
+Void
+Unstoppable
+Overload
+Torso
+
+Friday	05/12/2023	Chamber_of_Starlight	Dreaming_City	Solar
+Solar Void
+Unstoppable
+Overload
+Helmet
+
+Saturday	05/13/2023	Perdition	Europa	Arc
+Arc Void
+Barrier
+Overload
+Leg
+
+Sunday	05/14/2023	Bunker_E15	Europa	Void
+Void
+Barrier
+Overload
+Arm
+
+Monday	05/15/2023	The_Conflux	Nessus	Solar
+Void
+Barrier
+Unstoppable
+Torso
+
+Tuesday	05/16/2023	Thrilladrome	Neomuna	Void
+Arc Void
+Barrier
+Overload
+Helmet
+
+Wednesday	05/17/2023	Hydroponics_Delta	Neomuna	Void
+Solar Arc
+Barrier
+Unstoppable
+Leg
+
+Thursday	05/18/2023	Gilded_Precept	Neomuna	Void
+Solar Void
+Barrier
+Unstoppable
+Arm
+
+Friday	05/19/2023	Excavation_Site_XII	EDZ	Solar
+Arc
+Barrier
+Unstoppable
+Torso
+
+Saturday	05/20/2023	Flight_Dock_IV	EDZ	Solar
+Void
+Barrier
+Unstoppable
+Helmet
+
+Sunday	05/21/2023	The_Quarry	EDZ	Void
+Solar Void
+Barrier
+Unstoppable
+Leg
