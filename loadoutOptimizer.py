@@ -7,7 +7,8 @@ from tkinter import ttk
 import tkinter as tk
 import webbrowser
 import LostSector
-import datetime
+from requests_oauthlib import OAuth2Session
+import json
 
 #function for making gui window
 def window(pv):
@@ -121,10 +122,33 @@ def generateSimplifiedWeapons(weaponData, destiny):
     return simplifiedWeapons
 
 async def main():
+    client_id = '44039'
+    api_key = 'f6777de733f847a5a7c8ab50d357d399'
+    base_auth_url = 'https://www.bungie.net/en/oauth/authorize'
+    token_url =  'https://www.bungie.net/platform/app/oauth/token/'
+    redirect_url = 'https://www.github.com/Salsasp'
+    get_user_details_endpoint = "https://www.bungie.net/Platform/User/GetCurrentBungieNetUser/"
+
+    session = OAuth2Session(client_id=client_id, redirect_uri=redirect_url)
+    auth_link = session.authorization_url(base_auth_url)
+    print(auth_link[0])
+    redirect_response = input("Paste your redirect url here") #TODO: start oauth process when tkinter buton is pressed, automatically fetch auth response instead of ctrl c
+    session.fetch_token(
+        client_id = client_id,
+        token_url=token_url,
+        authorization_response=redirect_response,
+        include_client_id=True
+    )
+    additional_headers = {'X-API-KEY': api_key}
+    response = session.get(url=get_user_details_endpoint, headers=additional_headers)
+    responseDict = json.loads(response.text)
+    membership_id = responseDict['Response']['membershipId']
+    username = responseDict['Response']['uniqueName']
+
+
     destiny = pydest.Pydest('f6777de733f847a5a7c8ab50d357d399') #create object to access api using api key
 
     platform = platforms.get('PC')
-    username = "Salsasp#2330"
     userResponse = await destiny.api.search_destiny_player(platform, username)
 
     if userResponse['ErrorCode'] == 1 and len(userResponse['Response']) > 0:
